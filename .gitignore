@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Data files
+*.csv
+*.xlsx
+*.xls
+*.json
+*.parquet
+*.pkl
+*.pickle
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results and outputs
+results/
+*.png
+*.jpg
+*.pdf
+*.html
+
+# Sensitive data
+*_mapping.csv
+*_masked.csv
+secrets/
+.env
+
