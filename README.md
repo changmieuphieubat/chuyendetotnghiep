@@ -17,3 +17,4 @@ Dự án phân tích và dự báo dữ liệu giao dịch chuyển tiền từ 
 - Python (pandas, numpy, scikit-learn, statsmodels, prophet)
 - Thời gian: 9 tuần thực nghiệm + 3 tuần viết báo cáo
 
+# study
