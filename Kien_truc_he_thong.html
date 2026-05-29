@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiến trúc hệ thống — Chấm điểm rủi ro bảo mật API</title>
+<style>
+  :root{
+    --bg:#f1f5f9; --panel:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --src:#0ea5e9; --ing:#6366f1; --etl:#8b5cf6; --feat:#14b8a6;
+    --rule:#f59e0b; --ml:#ef4444; --dl:#ec4899; --fuse:#22c55e;
+    --out:#3b82f6; --tech:#f8fafc; --border:#e2e8f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:linear-gradient(160deg,#eef2f7,#f8fafc);color:var(--ink);padding:32px 18px;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  h1{font-size:23px;text-align:center;font-weight:700;margin-bottom:4px;color:#0f172a;}
+  .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:6px;}
+  .legend{text-align:center;color:var(--muted);font-size:12px;margin-bottom:22px;}
+  .layer{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:0 auto;position:relative;box-shadow:0 4px 14px rgba(15,23,42,.07);}
+  .layer-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .badge{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px;flex:0 0 auto;}
+  .layer-title{font-size:15px;font-weight:700;}
+  .layer-note{font-size:11.5px;color:var(--muted);margin-left:auto;text-align:right;max-width:46%;}
+  .blocks{display:flex;gap:12px;flex-wrap:wrap;}
+  .block{flex:1;min-width:150px;background:var(--tech);border:1px solid var(--border);border-radius:10px;padding:11px 13px;}
+  .block .name{font-weight:600;font-size:13.5px;margin-bottom:6px;color:#0f172a;}
+  .block .desc{font-size:11.5px;color:var(--muted);line-height:1.5;}
+  .tech{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;}
+  .tag{font-size:10.5px;background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;border-radius:6px;padding:2px 7px;font-weight:600;}
+  .arrow{width:2px;height:26px;background:linear-gradient(#cbd5e1,#94a3b8);margin:6px auto;position:relative;}
+  .arrow::after{content:"";position:absolute;bottom:-1px;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #94a3b8;}
+  .parallel-label{text-align:center;font-size:11px;color:var(--muted);margin:2px 0 8px;font-style:italic;}
+  .rail{position:relative;}
+  .cross{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+  .cross .chip{background:#fff;border:1px dashed #cbd5e1;border-radius:20px;padding:6px 16px;font-size:12px;color:var(--muted);box-shadow:0 2px 6px rgba(15,23,42,.04);}
+  .cross .chip b{color:#0369a1;}
+  /* accent left border per layer */
+  .l1{border-left:5px solid var(--src)} .l2{border-left:5px solid var(--ing)}
+  .l3{border-left:5px solid var(--etl)} .l4{border-left:5px solid var(--feat)}
+  .l5{border-left:5px solid var(--rule)} .l6{border-left:5px solid var(--fuse)}
+  .l7{border-left:5px solid var(--out)}
+  .b-rule{border-top:3px solid var(--rule)} .b-ml{border-top:3px solid var(--ml)} .b-dl{border-top:3px solid var(--dl)}
+  .score{display:inline-block;font-size:10.5px;color:#fbbf24;font-weight:700;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Kiến trúc hệ thống chấm điểm rủi ro bảo mật API (gần thời gian thực)</h1>
+  <div class="sub">Mô hình lai: Rule + Machine Learning + Deep Learning + AI Agent, có khả năng giải thích</div>
+  <div class="legend">Luồng dữ liệu đi từ trên xuống · Tầng 5 chạy song song 3 mô hình</div>
+
+  <!-- L1 -->
+  <div class="layer l1">
+    <div class="layer-head"><span class="badge" style="background:var(--src)">1</span>
+      <span class="layer-title">Nguồn dữ liệu</span>
+      <span class="layer-note">Log API thô đa nguồn</span></div>
+    <div class="blocks">
+      <div class="block"><div class="name">API Gateway / Reverse Proxy</div><div class="desc">Log request: method, endpoint, status, latency, IP</div><div class="tech"><span class="tag">NGINX</span><span class="tag">Kong</span></div></div>
+      <div class="block"><div class="name">Application Logs</div><div class="desc">Log nghiệp vụ & xác thực từ dịch vụ backend</div><div class="tech"><span class="tag">App services</span><span class="tag">OAuth2</span></div></div>
+      <div class="block"><div class="name">Access Logs</div><div class="desc">Access log dạng chuẩn (Apache/Combined)</div><div class="tech"><span class="tag">Web server</span></div></div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- L2 -->
+  <div class="layer l2">
+    <div class="layer-head"><span class="badge" style="background:var(--ing)">2</span>
+      <span class="layer-title">Thu nhận (Ingestion)</span>
+      <span class="layer-note">Đệm luồng log gần thực; bản tối thiểu có thể dùng tail/batch</span></div>
+    <div class="blocks">
+      <div class="block"><div class="name">Hàng đợi luồng</div><div class="desc">Thu gom & đệm log theo luồng, tách tốc độ nguồn khỏi xử lý</div><div class="tech"><span class="tag">Apache Kafka</span><span class="tag">Redis Stream</span></div></div>
+      <div class="block"><div class="name">Collector / Shipper</div><div class="desc">Đẩy log từ nguồn vào hàng đợi</div><div class="tech"><span class="tag">Fluent Bit</span><span class="tag">Filebeat</span></div></div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- L3 -->
+  <div class="layer l3">
+    <div class="layer-head"><span class="badge" style="background:var(--etl)">3</span>
+      <span class="layer-title">ETL &amp; Ẩn danh &nbsp;(PA-1 → PA-3)</span>
+      <span class="layer-note">Chuẩn hoá schema chung · ẩn danh dữ liệu nhạy cảm</span></div>
+    <div class="blocks">
+      <div class="block"><div class="name">Chuẩn hoá &amp; Làm sạch</div><div class="desc">Đổi về 1 schema, UTC; bỏ dòng lỗi, ép kiểu, kiểm tra hợp lệ</div><div class="tech"><span class="tag">Python</span><span class="tag">Pandas</span><span class="tag">Polars</span></div></div>
+      <div class="block"><div class="name">Ẩn danh</div><div class="desc">Hash có salt / token hoá <code>client_ip</code>, <code>client_id</code></div><div class="tech"><span class="tag">hashlib</span><span class="tag">salted hash</span></div></div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- L4 -->
+  <div class="layer l4">
+    <div class="layer-head"><span class="badge" style="background:var(--feat)">4</span>
+      <span class="layer-title">Feature Engine &nbsp;(PA-4 → PA-7)</span>
+      <span class="layer-note">Gom cửa sổ thời gian → vector cho ML, tensor T×6 cho DL</span></div>
+    <div class="blocks">
+      <div class="block"><div class="name">Feature thống kê cửa sổ</div><div class="desc">req_per_min · 401_rate · 5xx_rate · p95_latency · unique_ip_count · ip_entropy</div><div class="tech"><span class="tag">Pandas/Polars</span><span class="tag">NumPy</span></div></div>
+      <div class="block"><div class="name">Chuẩn bị đầu vào mô hình</div><div class="desc">RobustScaler/z-score cho IF; chuỗi trượt T bước cho LSTM-AE</div><div class="tech"><span class="tag">scikit-learn</span><span class="tag">tensor</span></div></div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+  <div class="parallel-label">▼ Tầng phát hiện — 3 mô hình chạy song song trên cùng dữ liệu đã chuẩn hoá ▼</div>
+
+  <!-- L5 -->
+  <div class="layer l5">
+    <div class="layer-head"><span class="badge" style="background:var(--rule)">5</span>
+      <span class="layer-title">Tầng phát hiện song song</span>
+      <span class="layer-note">Mỗi nhánh sinh một điểm thành phần</span></div>
+    <div class="blocks">
+      <div class="block b-rule"><div class="name">5a · Rule</div><div class="desc">Policy-as-Code đánh giá vi phạm chính sách (method lạ, auth fail burst, endpoint nhạy cảm)</div><div class="tech"><span class="tag">YAML/JSON</span><span class="tag">Policy engine</span></div><span class="score">→ RuleScore</span></div>
+      <div class="block b-ml"><div class="name">5b · Machine Learning</div><div class="desc">Isolation Forest — phát hiện điểm lệch baseline trên vector feature</div><div class="tech"><span class="tag">scikit-learn</span><span class="tag">Isolation Forest</span></div><span class="score">→ MLScore</span></div>
+      <div class="block b-dl"><div class="name">5c · Deep Learning</div><div class="desc">LSTM-Autoencoder — reconstruction error trên chuỗi thời gian</div><div class="tech"><span class="tag">PyTorch</span><span class="tag">LSTM-AE</span></div><span class="score">→ DLScore</span></div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- L6 -->
+  <div class="layer l6">
+    <div class="layer-head"><span class="badge" style="background:var(--fuse)">6</span>
+      <span class="layer-title">Hợp nhất · Giải thích · AI Agent</span>
+      <span class="layer-note">Trọng số wr/wm/wd (hoặc hồi quy hiệu chỉnh)</span></div>
+    <div class="blocks">
+      <div class="block"><div class="name">Hợp nhất điểm</div><div class="desc">Chuẩn hoá &amp; gộp RuleScore/MLScore/DLScore → <b>RiskScore 0–100</b> &amp; alert_level</div><div class="tech"><span class="tag">Weighted fusion</span><span class="tag">Linear Regression</span></div></div>
+      <div class="block"><div class="name">Explainability</div><div class="desc">Top feature, policy hit, ngưỡng → explain_bundle</div><div class="tech"><span class="tag">SHAP</span><span class="tag">feature attribution</span></div></div>
+      <div class="block"><div class="name">AI Agent</div><div class="desc">Triage Agent phân loại sự cố · Response Advisor khuyến nghị xử lý</div><div class="tech"><span class="tag">LLM</span><span class="tag">Agent</span></div></div>
+    </div>
+  </div>
+  <div class="arrow"></div>
+
+  <!-- L7 -->
+  <div class="layer l7">
+    <div class="layer-head"><span class="badge" style="background:var(--out)">7</span>
+      <span class="layer-title">Lưu trữ · Dashboard · Cảnh báo</span>
+      <span class="layer-note">Phục vụ vận hành SOC/DevOps</span></div>
+    <div class="blocks">
+      <div class="block"><div class="name">Lưu trữ</div><div class="desc">Điểm rủi ro, sự kiện, explain_bundle, audit rule</div><div class="tech"><span class="tag">PostgreSQL</span></div></div>
+      <div class="block"><div class="name">API trung tâm</div><div class="desc">Expose RiskScore &amp; truy vấn sự kiện</div><div class="tech"><span class="tag">FastAPI</span></div></div>
+      <div class="block"><div class="name">Dashboard</div><div class="desc">Trực quan điểm rủi ro theo thời gian &amp; khóa giám sát</div><div class="tech"><span class="tag">Streamlit</span><span class="tag">Plotly</span></div></div>
+      <div class="block"><div class="name">Cảnh báo</div><div class="desc">Gửi cảnh báo theo alert_level</div><div class="tech"><span class="tag">Email</span><span class="tag">Slack</span><span class="tag">Webhook</span></div></div>
+    </div>
+  </div>
+
+  <!-- cross-cutting -->
+  <div class="cross">
+    <div class="chip"><b>Đóng gói:</b> Docker · Docker Compose</div>
+    <div class="chip"><b>Backend lõi:</b> Python · FastAPI</div>
+    <div class="chip"><b>Nguyên tắc:</b> ẩn danh trước phân tích · Policy-as-Code có kiểm toán</div>
+  </div>
+</div>
+</body>
+</html>
